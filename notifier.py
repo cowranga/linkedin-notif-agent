@@ -19,8 +19,10 @@ HEARTBEAT_TIMEOUT = 10
 
 def send(text: str) -> bool:
     """Send ``text`` to the configured Telegram chat. Returns True on success."""
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    # Strip whitespace: a stray trailing newline (common when pasting into a CI secret)
+    # would corrupt the request URL / chat id.
+    token = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    chat_id = (os.getenv("TELEGRAM_CHAT_ID") or "").strip()
     if not token or not chat_id:
         logger.error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set; cannot send.")
         return False
@@ -47,7 +49,7 @@ def heartbeat(success: bool = True) -> bool:
     (returns True) when HEARTBEAT_URL is unset. When ``success`` is False, "/fail" is
     appended so the monitor records a failed run. Never raises.
     """
-    url = os.getenv("HEARTBEAT_URL")
+    url = (os.getenv("HEARTBEAT_URL") or "").strip()
     if not url:
         return True
     if not success:

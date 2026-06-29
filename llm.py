@@ -63,7 +63,9 @@ def build_digest(emails: list[dict[str, str]]) -> str:
     if not emails:
         return "NONE"
 
-    api_key = os.getenv("ANTHROPIC_API_KEY")
+    # Strip whitespace: a stray trailing newline (common when pasting into a CI secret)
+    # makes an invalid auth header, which the SDK surfaces as "Connection error."
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if not api_key:
         raise LLMError("ANTHROPIC_API_KEY not set; cannot summarize.")
 
