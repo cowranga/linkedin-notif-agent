@@ -37,6 +37,9 @@ IGNORE everything else: post likes/comments, "people you may know", job alerts,
 Output rules:
 - Write a short, friendly message summarizing only the KEEP items: who messaged me,
   who sent me a connection request, and whose request was accepted. Use names when present.
+- For each item, include WHEN it happened using that email's "Sent at" value, phrased as an
+  approximate time (e.g. "around Sun 29 Jun, 1:36 PM IST"). This is when LinkedIn emailed me,
+  which is roughly when the event happened. Put one item per line.
 - No preamble, no greeting, no sign-off, no markdown headers — just the summary lines.
 - If NONE of the three categories are present in the emails, output exactly: NONE"""
 
@@ -48,6 +51,7 @@ def _format_emails(emails: list[dict[str, str]]) -> str:
             f"Email {i}:\n"
             f"From: {e.get('sender', '')}\n"
             f"Subject: {e.get('subject', '')}\n"
+            f"Sent at: {e.get('sent_at', 'unknown')}\n"
             f"Snippet: {e.get('snippet', '')}"
         )
     return "\n\n".join(blocks)

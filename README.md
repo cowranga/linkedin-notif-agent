@@ -62,6 +62,7 @@ This agent never touches LinkedIn. It only reads **emails LinkedIn already chose
    - `EMAIL_ADDRESS` / `EMAIL_APP_PASSWORD` — your Gmail and a 16-char [App Password](https://myaccount.google.com/apppasswords) (requires 2-Step Verification). Spaces are stripped automatically.
    - `IMAP_HOST` — `imap.gmail.com`.
    - `LOOKBACK_HOURS` — `6` (match your schedule interval).
+   - `DISPLAY_TIMEZONE` — IANA name (e.g. `Asia/Kolkata`) for the event times shown in the digest. Defaults to `UTC`. These reflect when LinkedIn *emailed* you — a close proxy for when the event happened, since the email can lag the in-app event by up to ~an hour.
    - `TELEGRAM_BOT_TOKEN` — from [@BotFather](https://t.me/BotFather).
    - `TELEGRAM_CHAT_ID` — your chat ID (message the bot, then check `https://api.telegram.org/bot<TOKEN>/getUpdates`).
    - `HEARTBEAT_URL` *(optional)* — a [healthchecks.io](https://healthchecks.io) ping URL; create a check with a period of 6h + a grace window and you'll be alerted if a run is ever missed. Leave unset to disable.

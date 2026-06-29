@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 from email.header import decode_header, make_header
 from email.message import Message
 from email.utils import parsedate_to_datetime
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from dotenv import load_dotenv
 
@@ -29,7 +30,26 @@ EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 EMAIL_APP_PASSWORD = (os.getenv("EMAIL_APP_PASSWORD") or "").replace(" ", "") or None
 LOOKBACK_HOURS = int(os.getenv("LOOKBACK_HOURS", "6"))
 
+# Timezone for displaying email send times in the digest (IANA name, e.g. "Asia/Kolkata").
+DISPLAY_TIMEZONE = os.getenv("DISPLAY_TIMEZONE", "UTC")
+try:
+    _DISPLAY_TZ = ZoneInfo(DISPLAY_TIMEZONE)
+except (ZoneInfoNotFoundError, ValueError):
+    logger.warning("Unknown DISPLAY_TIMEZONE %r; falling back to UTC.", DISPLAY_TIMEZONE)
+    _DISPLAY_TZ = timezone.utc
+
 SNIPPET_MAX_CHARS = 300
+
+
+def _format_sent_at(sent_at: datetime) -> str:
+    """Render an email's send time in the configured display timezone.
+
+    This is when LinkedIn sent the notification email — the best available proxy for
+    when the underlying event happened (LinkedIn does not include the exact in-app time).
+    """
+    local = sent_at.astimezone(_DISPLAY_TZ)
+    # e.g. "Sun 29 Jun, 1:36 PM IST"
+    return local.strftime("%a %d %b, %-I:%M %p %Z")
 
 
 def _decode(value: str | None) -> str:
@@ -142,6 +162,7 @@ def get_recent_linkedin_emails() -> list[dict[str, str]]:
                     "sender": _decode(msg.get("From")),
                     "subject": _decode(msg.get("Subject")),
                     "snippet": _extract_snippet(msg),
+                    "sent_at": _format_sent_at(sent_at),
                 }
             )
 
@@ -168,5 +189,6 @@ if __name__ == "__main__":
         print(f"--- [{i}] ---")
         print(f"From:    {e['sender']}")
         print(f"Subject: {e['subject']}")
+        print(f"Sent at: {e['sent_at']}")
         print(f"Snippet: {e['snippet']}")
         print()

@@ -33,6 +33,7 @@ and sends me a short DM. Runs every 6 hours. If nothing relevant happened, send 
 
 ## Env vars
 ANTHROPIC_API_KEY, EMAIL_ADDRESS, EMAIL_APP_PASSWORD, IMAP_HOST, LOOKBACK_HOURS,
+DISPLAY_TIMEZONE (IANA name for digest timestamps; default UTC),
 TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, HEARTBEAT_URL (optional)
 
 ## Conventions
